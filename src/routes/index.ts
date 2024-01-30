@@ -1,16 +1,21 @@
 import express, { Request, Response } from 'express';
 import useConnectDB from '../config/mongo.config';
-import User from '../models/user';
-const router = express.Router();
 
-router.get('/', async (req: Request, res: Response) => {
+import { signUpFn } from '../controllers/signup';
+import { User } from '../models/users';
+import { signInFn } from '../controllers/signin';
+const route = express.Router();
+
+route.get('/', async (req: Request, res: Response) => {
   res.send('MKX CHAT APIs');
 });
 
-router.get('/users', async (req: Request, res: Response) => {
-  useConnectDB();
+route.get('/users', async (req: Request, res: Response) => {
   const users = await User.find();
   res.send({ users, message: 'User Get Successfully' });
 });
 
-export default router;
+route.post('/signup', signUpFn);
+route.post('/signin', signInFn);
+
+export default route;

@@ -5,9 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const routes_1 = __importDefault(require("./routes"));
-const dotenv_1 = require("dotenv");
+const mongo_config_1 = __importDefault(require("./config/mongo.config"));
 const app = (0, express_1.default)();
 const PORT = 3001;
+app.use(express_1.default.urlencoded({ extended: true }));
+app.use(mongo_config_1.default);
 app.use(routes_1.default);
-(0, dotenv_1.config)();
-app.listen(PORT, () => console.log(`Server is listening ${PORT}`));
+app.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));
