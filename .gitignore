@@ -1,0 +1,42 @@
+# Ignore node_modules directory
+node_modules/
+
+# Ignore environment files
+.env
+
+# Ignore log files
+logs/
+*.log
+
+# Ignore npm debug log
+npm-debug.log*
+
+# Ignore yarn debug log
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore editor files
+.vscode/
+.idea/
+.prettierrc/
+
+# Ignore macOS metadata
+.DS_Store
+
+# Ignore environment-specific configuration files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore dependency directories
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Ignore directory for instrumentation files
+lib-cov
+
+# Ignore Node.js cluster setup
+node_modules/
