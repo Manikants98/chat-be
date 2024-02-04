@@ -1,9 +1,7 @@
 import express, { Request, Response } from 'express';
-import useConnectDB from '../config/mongo.config';
-
+import { signInFn } from '../controllers/signin';
 import { signUpFn } from '../controllers/signup';
 import { User } from '../models/users';
-import { signInFn } from '../controllers/signin';
 const route = express.Router();
 
 route.get('/', async (req: Request, res: Response) => {

@@ -8,6 +8,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const users_1 = require("../../models/users");
 const signInFn = async (req, res) => {
     const { email, password } = await req.body;
+    console.log(req.body);
     try {
         if (!email) {
             return res.status(400).json({ message: 'Please enter your email' });
