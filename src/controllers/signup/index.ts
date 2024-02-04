@@ -4,17 +4,16 @@ import jwt from 'jsonwebtoken';
 import { User } from '../../models/users';
 
 interface requestBody {
-  first_name: string;
-  last_name: string;
+  name: string;
   email: string;
   password: string;
   role: string;
 }
 
 export const signUpFn = async (req: Request, res: Response) => {
-  const { first_name, last_name, email, password, role = 'User' }: requestBody = await req.body;
+  const { name, email, password, role = 'User' }: requestBody = await req.body;
 
-  if (!first_name) {
+  if (!name) {
     return res.status(400).json({ message: 'Please enter your first name' });
   }
 
@@ -33,8 +32,7 @@ export const signUpFn = async (req: Request, res: Response) => {
   }
   const token = jwt.sign({ email, role }, 'MkxReactJsDev');
   const user = new User({
-    first_name,
-    last_name,
+    name,
     email,
     token,
     password: await bcrypt.hash(password, 10)

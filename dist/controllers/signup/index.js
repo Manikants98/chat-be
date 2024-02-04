@@ -8,8 +8,8 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const users_1 = require("../../models/users");
 const signUpFn = async (req, res) => {
-    const { first_name, last_name, email, password, role = 'User' } = await req.body;
-    if (!first_name) {
+    const { name, email, password, role = 'User' } = await req.body;
+    if (!name) {
         return res.status(400).json({ message: 'Please enter your first name' });
     }
     if (!email) {
@@ -24,8 +24,7 @@ const signUpFn = async (req, res) => {
     }
     const token = jsonwebtoken_1.default.sign({ email, role }, 'MkxReactJsDev');
     const user = new users_1.User({
-        first_name,
-        last_name,
+        name,
         email,
         token,
         password: await bcrypt_1.default.hash(password, 10)
