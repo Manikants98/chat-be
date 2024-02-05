@@ -5,10 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.signInFn = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const Users_1 = require("../../models/Users");
+const Users_1 = require("../../../models/Users");
 const signInFn = async (req, res) => {
     const { email, password } = await req.body;
-    console.log(req.body);
     try {
         if (!email) {
             return res.status(400).json({ message: 'Please enter your email' });

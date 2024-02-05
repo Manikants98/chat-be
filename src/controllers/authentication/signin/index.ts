@@ -1,15 +1,14 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
-import { User } from '../../models/Users';
+import { User } from '../../../models/Users';
 
-interface RequestBody {
+interface requestBody {
   email: string;
   password: string;
 }
 
 export const signInFn = async (req: Request, res: Response) => {
-  const { email, password }: RequestBody = await req.body;
-  console.log(req.body);
+  const { email, password }: requestBody = await req.body;
   try {
     if (!email) {
       return res.status(400).json({ message: 'Please enter your email' });
@@ -30,6 +29,7 @@ export const signInFn = async (req: Request, res: Response) => {
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Oops! You have enterd incorrect password.' });
     }
+
     return res.status(200).json({ message: 'Login successful', token: user.token });
   } catch (error) {
     return res.status(500).json({ error: 'Login failed. Please try again later' });
