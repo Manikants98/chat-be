@@ -7,17 +7,12 @@ exports.User = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const { Schema } = mongoose_1.default;
 const userSchema = new Schema({
-    first_name: {
+    name: {
         type: String,
         required: true,
         trim: true,
         minlength: 2,
-        maxlength: 50,
-    },
-    last_name: {
-        type: String,
-        trim: true,
-        maxlength: 50,
+        maxlength: 50
     },
     email: {
         type: String,
@@ -25,36 +20,33 @@ const userSchema = new Schema({
         unique: true,
         trim: true,
         lowercase: true,
-        match: [
-            /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/,
-            "Invalid email address",
-        ],
+        match: [/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/, 'Invalid email address']
     },
     password: {
         type: String,
         required: true,
-        minlength: 6,
+        minlength: 6
     },
     token: {
         type: String,
-        required: true,
+        required: true
     },
     mobile_number: {
-        type: Number,
+        type: Number
     },
     gender: {
-        type: String,
+        type: String
     },
     created_date: {
         type: Date,
-        default: Date.now,
+        default: Date.now
     },
     role: {
-        type: String,
+        type: String
     },
     last_modified_date: {
         type: Date,
-        default: Date.now,
-    },
+        default: Date.now
+    }
 });
-exports.User = mongoose_1.default.models.users || mongoose_1.default.model("users", userSchema);
+exports.User = mongoose_1.default.models.users || mongoose_1.default.model('users', userSchema);
