@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUsersFn = void 0;
+// import { User } from '../../models/Users';
 async function getUsersFn(req, res) {
     try {
         const message = 'Users Executed Successfully';

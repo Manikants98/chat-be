@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { User } from '../../../models/Users';
+// import { User } from '../../../models/Users';
 
 interface requestBody {
   name: string;
@@ -25,18 +25,18 @@ export const signUpFn = async (req: Request, res: Response) => {
     return res.status(400).json({ message: 'Please enter your password' });
   }
 
-  const users = await User.findOne({ email: email });
+  // const users = await User.findOne({ email: email });
 
-  if (users) {
-    return res.status(400).json({ message: 'This email already exists.' });
-  }
+  // if (users) {
+  //   return res.status(400).json({ message: 'This email already exists.' });
+  // }
   const token = jwt.sign({ email, role }, 'MkxReactJsDev');
-  const user = new User({
-    name,
-    email,
-    token,
-    password: await bcrypt.hash(password, 10)
-  });
-  await user.save();
+  // const user = new User({
+  //   name,
+  //   email,
+  //   token,
+  //   password: await bcrypt.hash(password, 10)
+  // });
+  // await user.save();
   return res.json({ message: 'User registered successfully', token });
 };
