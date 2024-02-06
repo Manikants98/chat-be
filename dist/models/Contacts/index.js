@@ -40,12 +40,12 @@ const contactSchema = new mongoose_1.default.Schema({
     },
     sender: {
         type: mongoose_1.default.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'users',
         required: true
     },
     receiver: {
         type: mongoose_1.default.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'users'
     },
     created_date: {
         type: Date,

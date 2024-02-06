@@ -9,7 +9,7 @@ interface requestBody {
   mobile_number: string | number | undefined;
   instagram: string;
   linkedin: string;
-  contact_type: string | 'General';
+  contact_type: 'General';
 }
 
 export const contactsFn = async (req: Request, res: Response) => {
@@ -32,10 +32,8 @@ export const contactsFn = async (req: Request, res: Response) => {
     if (!email) {
       return res.status(400).json({ message: 'Please enter your email' });
     }
+
     const user = await User.findOne({ token });
-    if (!user) {
-      return res.status(401).json({ message: 'Provide Valid Token' });
-    }
 
     const isContact = await Contact.findOne({ email, sender: user._id });
 
@@ -52,24 +50,32 @@ export const contactsFn = async (req: Request, res: Response) => {
       linkedin,
       contact_type,
       sender: user._id,
-      receiver: receiver ? receiver._id : null
+      receiver: receiver ? receiver?._id : null
     });
     await contact.save();
     return res.json({ message: 'Contact created successfully' });
   }
+
   if (req.method === 'GET') {
-    const token = req.headers.authorization;
+    const user = await User.findOne({ token: req.headers.authorization });
 
-    const user = await User.findOne({ token });
+    const data = await Contact.find({ $or: [{ receiver: user._id }, { sender: user._id }] }).populate([
+      { path: 'receiver', select: '-password -token' },
+      { path: 'sender', select: '-password -token' }
+    ]);
 
-    if (!user) {
-      return res.status(401).json({ message: 'Provide Valid Token' });
-    }
+    const contacts = data.map(contact => {
+      const other = contact.receiver && contact.receiver.equals(user._id) ? contact.sender : contact.receiver;
+      return {
+        _id: contact._id,
+        name: contact.name,
+        email: other ? other.email : contact.email,
+        created_date: contact.created_date,
+        last_modified_date: contact.last_modified_date,
+        is_chat_active: !!other
+      };
+    });
 
-    const senderContacts = await Contact.find({ sender: user._id });
-    const receiverContacts = await Contact.find({ receiver: user._id });
-
-    const contacts = senderContacts.concat(receiverContacts);
     return res.json({ message: 'Contacts get successfully', contacts });
   }
   return res.status(405).json({ message: `${req.method} method not allowed` });
