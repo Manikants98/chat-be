@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-// import User from '../../models/Users';
+import User from '../../models/Users';
 
 export const useAuth = async (req: Request, res: Response, next: NextFunction) => {
   const withoutToken = ['/', '/upload', '/signup', '/signin'];
@@ -14,10 +14,10 @@ export const useAuth = async (req: Request, res: Response, next: NextFunction) =
     return res.status(401).json({ message: 'Authorization is missing!' });
   }
 
-  // const user = await User.findOne({ token });
+  const user = await User.findOne({ token });
 
-  // if (!user) {
-  return res.status(401).json({ message: 'Invalid Authorization Token' });
-  // }
+  if (!user) {
+    return res.status(401).json({ message: 'Invalid Authorization Token' });
+  }
   next();
 };
