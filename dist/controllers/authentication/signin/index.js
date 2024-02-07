@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.signInFn = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const Users_1 = require("../../../models/Users");
+const Users_1 = __importDefault(require("../../../models/Users"));
 const signInFn = async (req, res) => {
     const { email, password } = await req.body;
     try {
@@ -15,7 +15,7 @@ const signInFn = async (req, res) => {
         if (!password) {
             return res.status(400).json({ message: 'Please enter your password' });
         }
-        const user = await Users_1.User.findOne({ email });
+        const user = await Users_1.default.findOne({ email });
         if (!user) {
             return res.status(401).json({ message: 'Oops! You have enterd incorrect email.' });
         }

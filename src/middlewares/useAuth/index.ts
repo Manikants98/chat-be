@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { User } from '../../models/Users';
+import User from '../../models/Users';
 
 export const useAuth = async (req: Request, res: Response, next: NextFunction) => {
   const withoutToken = ['/', '/upload', '/signup', '/signin'];
