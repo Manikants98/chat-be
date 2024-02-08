@@ -8,7 +8,7 @@ import { messagesFn } from '../controllers/messages';
 const route = express.Router();
 
 route.get('/', (req: Request, res: Response) => {
-  res.send('MKX CHAT APIs');
+  res.send('MKX CHAT APIs 1.1');
 });
 
 route.all('/users', getUsersFn);
