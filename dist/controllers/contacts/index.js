@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.contactsFn = void 0;
 const Contacts_1 = require("../../models/Contacts");
 const users_1 = __importDefault(require("../../models/users"));
+const helpers_1 = require("../../helpers");
 const contactsFn = async (req, res) => {
     if (req.method === 'POST') {
         const { name, email, mobile_number, instagram = 'https://instagram.com/', linkedin = 'https://linkedin.com/', contact_type = 'General' } = await req.body;
@@ -36,23 +37,77 @@ const contactsFn = async (req, res) => {
         return res.json({ message: 'Contact created successfully' });
     }
     if (req.method === 'GET') {
-        const user = await users_1.default.findOne({ token: req.headers.authorization });
-        const data = await Contacts_1.Contact.find({ $or: [{ receiver: user._id }, { sender: user._id }] }).populate([
-            { path: 'receiver', select: '-password -token' },
-            { path: 'sender', select: '-password -token' }
-        ]);
-        const contacts = data.map(contact => {
-            const other = contact.receiver && contact.receiver.equals(user._id) ? contact.sender : contact.receiver;
-            return {
-                _id: contact._id,
-                name: contact.name,
-                email: other ? other.email : contact.email,
-                created_date: contact.created_date,
-                last_modified_date: contact.last_modified_date,
-                is_chat_active: !!other
-            };
-        });
-        return res.json({ message: 'Contacts get successfully', contacts });
+        const { contact_id } = req.query;
+        const user = await (0, helpers_1.useUser)(req);
+        try {
+            if (contact_id) {
+                const contact = await Contacts_1.Contact.findById(contact_id).populate([
+                    { path: 'receiver', select: '-password -token' },
+                    { path: 'sender', select: '-password -token' }
+                ]);
+                if (!contact) {
+                    return res.status(404).json({ message: 'Contact not found' });
+                }
+                return res.json({ message: 'Contact retrieved successfully', contact });
+            }
+            const contacts = await Contacts_1.Contact.aggregate([
+                {
+                    $match: {
+                        $or: [{ receiver: user._id }, { sender: user._id }]
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: 'receiver',
+                        foreignField: '_id',
+                        as: 'receiver'
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: 'sender',
+                        foreignField: '_id',
+                        as: 'sender'
+                    }
+                },
+                {
+                    $addFields: {
+                        other: {
+                            $cond: {
+                                if: { $eq: ['$receiver._id', user._id] },
+                                then: '$sender',
+                                else: '$receiver'
+                            }
+                        }
+                    }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        name: 1,
+                        mobile_number: 1,
+                        email: {
+                            $cond: [
+                                { $gt: [{ $size: '$other' }, 0] },
+                                { $arrayElemAt: ['$other.email', 0] },
+                                { $ifNull: ['$email', null] }
+                            ]
+                        },
+                        created_date: 1,
+                        last_modified_date: 1,
+                        is_chat_active: {
+                            $cond: { if: { $or: ['$receiver', '$sender'] }, then: true, else: false }
+                        }
+                    }
+                }
+            ]);
+            return res.json({ message: 'Contacts retrieved successfully', contacts });
+        }
+        catch (error) {
+            return res.status(500).json({ message: 'Internal Server Error' });
+        }
     }
     return res.status(405).json({ message: `${req.method} method not allowed` });
 };

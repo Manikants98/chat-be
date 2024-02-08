@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Contact } from '../../models/Contacts';
 import User from '../../models/users';
+import { useUser } from '../../helpers';
 
 interface requestBody {
   avatar: string;
@@ -57,26 +58,80 @@ export const contactsFn = async (req: Request, res: Response) => {
   }
 
   if (req.method === 'GET') {
-    const user = await User.findOne({ token: req.headers.authorization });
+    const { contact_id } = req.query;
+    const user = await useUser(req);
 
-    const data = await Contact.find({ $or: [{ receiver: user._id }, { sender: user._id }] }).populate([
-      { path: 'receiver', select: '-password -token' },
-      { path: 'sender', select: '-password -token' }
-    ]);
+    try {
+      if (contact_id) {
+        const contact = await Contact.findById(contact_id).populate([
+          { path: 'receiver', select: '-password -token' },
+          { path: 'sender', select: '-password -token' }
+        ]);
+        if (!contact) {
+          return res.status(404).json({ message: 'Contact not found' });
+        }
+        return res.json({ message: 'Contact retrieved successfully', contact });
+      }
 
-    const contacts = data.map(contact => {
-      const other = contact.receiver && contact.receiver.equals(user._id) ? contact.sender : contact.receiver;
-      return {
-        _id: contact._id,
-        name: contact.name,
-        email: other ? other.email : contact.email,
-        created_date: contact.created_date,
-        last_modified_date: contact.last_modified_date,
-        is_chat_active: !!other
-      };
-    });
+      const contacts = await Contact.aggregate([
+        {
+          $match: {
+            $or: [{ receiver: user._id }, { sender: user._id }]
+          }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'receiver',
+            foreignField: '_id',
+            as: 'receiver'
+          }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'sender',
+            foreignField: '_id',
+            as: 'sender'
+          }
+        },
+        {
+          $addFields: {
+            other: {
+              $cond: {
+                if: { $eq: ['$receiver._id', user._id] },
+                then: '$sender',
+                else: '$receiver'
+              }
+            }
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            name: 1,
+            mobile_number: 1,
+            email: {
+              $cond: [
+                { $gt: [{ $size: '$other' }, 0] },
+                { $arrayElemAt: ['$other.email', 0] },
+                { $ifNull: ['$email', null] }
+              ]
+            },
+            created_date: 1,
+            last_modified_date: 1,
+            is_chat_active: {
+              $cond: { if: { $or: ['$receiver', '$sender'] }, then: true, else: false }
+            }
+          }
+        }
+      ]);
 
-    return res.json({ message: 'Contacts get successfully', contacts });
+      return res.json({ message: 'Contacts retrieved successfully', contacts });
+    } catch (error) {
+      return res.status(500).json({ message: 'Internal Server Error' });
+    }
   }
+
   return res.status(405).json({ message: `${req.method} method not allowed` });
 };
