@@ -4,11 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUsersFn = void 0;
-const Users_1 = __importDefault(require("../../models/Users"));
+const users_1 = __importDefault(require("../../models/users"));
 async function getUsersFn(req, res) {
     try {
         const message = 'Users Executed Successfully';
-        const users = await Users_1.default.find();
+        const users = await users_1.default.find();
         res.status(200).json({ message, users });
     }
     catch (error) {

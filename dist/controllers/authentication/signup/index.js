@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.signUpFn = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const Users_1 = __importDefault(require("../../../models/Users"));
+const users_1 = __importDefault(require("../../../models/users"));
 const signUpFn = async (req, res) => {
     const { name, email, password, role = 'User' } = await req.body;
     if (!name) {
@@ -18,12 +18,12 @@ const signUpFn = async (req, res) => {
     if (!password) {
         return res.status(400).json({ message: 'Please enter your password' });
     }
-    const users = await Users_1.default.findOne({ email: email });
+    const users = await users_1.default.findOne({ email: email });
     if (users) {
         return res.status(400).json({ message: 'This email already exists.' });
     }
     const token = jsonwebtoken_1.default.sign({ email, role }, 'MkxReactJsDev');
-    const user = new Users_1.default({
+    const user = new users_1.default({
         name,
         email,
         token,

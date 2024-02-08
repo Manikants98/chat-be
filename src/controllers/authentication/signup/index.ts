@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import User from '../../../models/Users';
+import User from '../../../models/users';
 
 interface requestBody {
   name: string;

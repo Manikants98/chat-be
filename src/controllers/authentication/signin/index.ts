@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
-import User from '../../../models/Users';
+import User from '../../../models/users';
 
 interface requestBody {
   email: string;

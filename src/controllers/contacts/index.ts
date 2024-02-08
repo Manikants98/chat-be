@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Contact } from '../../models/Contacts';
-import User from '../../models/Users';
+import User from '../../models/users';
 
 interface requestBody {
   avatar: string;
