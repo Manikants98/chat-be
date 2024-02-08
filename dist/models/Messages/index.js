@@ -8,7 +8,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const messagesSchema = new mongoose_1.default.Schema({
     contact_id: {
         type: mongoose_1.default.Schema.Types.ObjectId,
-        ref: 'Contacts',
+        ref: 'contacts',
         required: true
     },
     message_type: {
@@ -28,9 +28,10 @@ const messagesSchema = new mongoose_1.default.Schema({
         type: Boolean,
         default: false
     },
-    is_sender: {
-        type: Boolean,
-        default: false
+    sender: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: 'users',
+        required: true
     }
 });
 exports.Messages = mongoose_1.default.models.messages || mongoose_1.default.model('messages', messagesSchema);

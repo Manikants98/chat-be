@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { useUser } from '../../helpers';
 import { Messages } from '../../models/Messages';
 
 interface requestBody {
@@ -11,6 +12,8 @@ export const messagesFn = async (req: Request, res: Response) => {
   if (req.method === 'POST') {
     const { contact_id, message, message_type }: requestBody = await req.body;
 
+    const user = await useUser(req);
+
     if (!contact_id) {
       return res.status(400).json({ message: 'Missing key contact_id' });
     }
@@ -22,7 +25,8 @@ export const messagesFn = async (req: Request, res: Response) => {
     const contact = new Messages({
       contact_id,
       message,
-      message_type
+      message_type,
+      sender: user._id
     });
 
     await contact.save();
@@ -37,9 +41,11 @@ export const messagesFn = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Missing key contact_id' });
     }
 
-    const messages = await Messages.find({ contact_id });
+    const { _id, name, email } = await useUser(req);
 
-    return res.json({ message: 'Messages get successfully', messages });
+    const messages = await Messages.find({ contact_id }).populate([{ path: 'sender', select: 'name email _id' }]);
+
+    return res.json({ message: 'Messages get successfully', messages, user: { _id, name, email } });
   }
 
   return res.status(405).json({ message: `${req.method} method not allowed` });
