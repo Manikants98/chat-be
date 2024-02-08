@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.signUpFn = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const Users_1 = require("../../models/Users");
+const Users_1 = require("../../models/users");
 const signUpFn = async (req, res) => {
     const { name, email, password, role = 'User' } = await req.body;
     if (!name) {
