@@ -11,7 +11,7 @@ const contacts_1 = require("../controllers/contacts");
 const messages_1 = require("../controllers/messages");
 const route = express_1.default.Router();
 route.get('/', (req, res) => {
-    res.send('MKX CHAT APIs 1.1');
+    res.send('MKX CHAT APIs 1.2');
 });
 route.all('/users', users_1.getUsersFn);
 route.post('/signup', signup_1.signUpFn);
