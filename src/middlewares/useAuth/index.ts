@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import User from '../../models/users';
 
 export const useAuth = async (req: Request, res: Response, next: NextFunction) => {
-  const withoutToken = ['/', '/upload', '/signup', '/signin', '/socket'];
+  const withoutToken = ['/', '/upload', '/signup', '/signin', '/socket', '/socket.io'];
 
   if (withoutToken.includes(req.path)) {
     return next();
