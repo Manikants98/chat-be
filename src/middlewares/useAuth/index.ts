@@ -10,14 +10,14 @@ export const useAuth = async (req: Request, res: Response, next: NextFunction) =
 
   const token = req.headers.authorization;
 
-  if (!token) {
-    return res.status(401).json({ message: 'Authorization is missing!' });
-  }
+  // if (!token) {
+  //   return res.status(401).json({ message: 'Authorization is missing!' });
+  // }
 
-  const user = await User.findOne({ token });
+  // const user = await User.findOne({ token });
 
-  if (!user) {
-    return res.status(401).json({ message: 'Invalid Authorization Token' });
-  }
+  // if (!user) {
+  //   return res.status(401).json({ message: 'Invalid Authorization Token' });
+  // }
   next();
 };
