@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.useAuth = void 0;
 const users_1 = __importDefault(require("../../models/users"));
 const useAuth = async (req, res, next) => {
-    const withoutToken = ['/', '/upload', '/signup', '/signin'];
+    const withoutToken = ['/', '/upload', '/signup', '/signin', '/socket'];
     if (withoutToken.includes(req.path)) {
         return next();
     }
