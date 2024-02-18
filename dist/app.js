@@ -10,6 +10,7 @@ const Test_1 = require("./controllers/Test");
 const routes_1 = __importDefault(require("./routes"));
 const mongo_config_1 = __importDefault(require("./config/mongo.config"));
 const useAuth_1 = require("./middlewares/useAuth");
+const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
 const port = 4000;
 const server = http_1.default.createServer(app);
@@ -18,6 +19,7 @@ app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());
 app.use(mongo_config_1.default);
 app.use(useAuth_1.useAuth);
+app.use((0, cors_1.default)());
 app.use(routes_1.default);
 app.use('/socket', (req, res) => {
     res.send('Socket event handler mounted on /socket');

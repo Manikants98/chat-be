@@ -5,6 +5,7 @@ import { testFn } from './controllers/Test';
 import route from './routes';
 import useConnectDB from './config/mongo.config';
 import { useAuth } from './middlewares/useAuth';
+import cors from 'cors';
 
 const app = express();
 const port = 4000;
@@ -18,6 +19,8 @@ app.use(express.json());
 app.use(useConnectDB);
 
 app.use(useAuth);
+
+app.use(cors());
 
 app.use(route);
 
