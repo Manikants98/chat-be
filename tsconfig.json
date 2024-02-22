@@ -1,17 +1,12 @@
 {
-    "compilerOptions": {
-      "typeRoots": ["node_modules/@types", "typings"],
-      "target": "ESNext",
-      "module": "commonjs",
-      "outDir": "./dist",
-      "strict": true,
-      "esModuleInterop": true,
-    },
-    "include": [
-      "src/**/*.ts"
-    ],
-    "exclude": [
-      "node_modules"
-    ]
-  }
-  
+  "compilerOptions": {
+    "typeRoots": ["node_modules/@types", "typings"],
+    "target": "ESNext",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
+}

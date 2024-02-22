@@ -3,45 +3,48 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.socketFn = void 0;
-const express_1 = __importDefault(require("express"));
-const http_1 = __importDefault(require("http"));
-const mongoose_1 = __importDefault(require("mongoose"));
-const socket_io_1 = require("socket.io");
-const mongo_config_1 = require("../../config/mongo.config");
+exports.registerSocketEvents = void 0;
 const Messages_1 = require("../../models/Messages");
-const app = (0, express_1.default)();
-const server = http_1.default.createServer(app);
-const io = new socket_io_1.Server(server);
-const socketFn = async (socket) => {
-    console.log('A user connected');
+const mongoose_1 = __importDefault(require("mongoose"));
+const mongo_config_1 = require("../../config/mongo.config");
+const registerSocketEvents = async (io) => {
     await mongoose_1.default.connect(mongo_config_1.uri);
-    socket.on('sendMessage', async (data) => {
-        const { contact_id, message, message_type, sender } = data;
-        if (!contact_id) {
-            return socket.emit('error', { message: 'Missing key contact_id' });
+    console.log('MongoDB Connected');
+    io.on("connection", async (socket) => {
+        console.log("Client connected:", socket.id);
+        try {
+            const messages = await Messages_1.Messages.find();
+            socket.emit("messages", messages);
         }
-        if (!message) {
-            return socket.emit('error', { message: 'Missing key message' });
+        catch (error) {
+            console.error("Error fetching messages:", error);
+            socket.emit("error", { message: "Error fetching messages" });
         }
-        const contact = new Messages_1.Messages({
-            contact_id,
-            message,
-            message_type,
-            sender
+        socket.on("sendMessage", async (messageData) => {
+            console.log("sendMessage event triggered");
+            const { contact_id, message, message_type, sender = "65bfbe2faecd8c9efc906200" } = messageData;
+            if (!contact_id || !message) {
+                socket.emit("error", { message: "Missing required fields" });
+                return;
+            }
+            try {
+                const newMessage = new Messages_1.Messages({
+                    contact_id,
+                    message,
+                    message_type,
+                    sender
+                });
+                await newMessage.save();
+                io.emit("newMessage", newMessage); // Emit 'newMessage' instead of 'messages'
+            }
+            catch (error) {
+                console.error("Error saving message:", error);
+                socket.emit("error", { message: "Error saving message" });
+            }
         });
-        await contact.save();
-        io.emit('newMessage', { message: 'Message sent successfully' });
-    });
-    socket.on('getMessages', async () => {
-        const messages = await Messages_1.Messages.find({ contact_id: '65c1fa406709e451bc22f928' }).populate([
-            { path: 'sender', select: 'name email _id' }
-        ]);
-        console.log('mkx');
-        socket.emit('messages', { message: 'Messages get successfully', messages });
-    });
-    socket.on('disconnect', () => {
-        console.log('A user disconnected');
+        socket.on("disconnect", () => {
+            console.log("Client disconnected:", socket.id);
+        });
     });
 };
-exports.socketFn = socketFn;
+exports.registerSocketEvents = registerSocketEvents;
