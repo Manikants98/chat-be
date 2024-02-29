@@ -11,7 +11,7 @@ route.get('/', (req: Request, res: Response) => {
   res.send('MKX CHAT APIs 1.3');
 });
 
-route.get('/profile', getUsersFn);
+route.all('/profile', getUsersFn);
 route.post('/signup', signUpFn);
 route.post('/signin', signInFn);
 route.all('/contacts', contactsFn);

@@ -13,7 +13,7 @@ const route = express_1.default.Router();
 route.get('/', (req, res) => {
     res.send('MKX CHAT APIs 1.3');
 });
-route.get('/profile', users_1.getUsersFn);
+route.all('/profile', users_1.getUsersFn);
 route.post('/signup', signup_1.signUpFn);
 route.post('/signin', signin_1.signInFn);
 route.all('/contacts', contacts_1.contactsFn);
