@@ -7,9 +7,9 @@ exports.getUsersFn = void 0;
 const users_1 = __importDefault(require("../../models/users"));
 async function getUsersFn(req, res) {
     try {
-        const message = 'Users Executed Successfully';
-        const users = await users_1.default.find();
-        res.status(200).json({ message, users });
+        const token = req.headers.authorization;
+        const user = await users_1.default.findOne({ token }).select('-password -token -__v');
+        res.status(200).json({ message: "Data Get Successfully", user });
     }
     catch (error) {
         res.status(500).send({ error });
