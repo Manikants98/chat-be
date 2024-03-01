@@ -21,10 +21,20 @@ app.use(useConnectDB);
 
 app.use(useAuth);
 
-app.use(cors());
+app.use(
+  cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  }),
+);
 
 app.use(route);
 
-io.on('connect', (socket) => { socketFn(socket) });
+io.on('connect', (socket) => {
+  socketFn(socket);
+});
 
-server.listen(port, () => { console.log(`Server is running on port ${port}`) });
+server.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});

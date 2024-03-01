@@ -20,7 +20,15 @@ app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());
 app.use(mongo_config_1.default);
 app.use(useAuth_1.useAuth);
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(routes_1.default);
-exports.io.on('connect', (socket) => { (0, socket2_1.socketFn)(socket); });
-server.listen(port, () => { console.log(`Server is running on port ${port}`); });
+exports.io.on('connect', (socket) => {
+    (0, socket2_1.socketFn)(socket);
+});
+server.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
