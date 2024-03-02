@@ -16,7 +16,7 @@ const app = (0, express_1.default)();
 const port = 4000;
 const server = http_1.default.createServer(app);
 exports.io = new socket_io_1.Server(server, { cors: { allowedHeaders: '*' } });
-const whitelist = ['http://localhost:3000'];
+const whitelist = ['http://localhost:3000', 'https://chatmkx.vercel.app/'];
 const corsOptions = {
     origin: function (origin, callback) {
         if (whitelist.includes(origin)) {
