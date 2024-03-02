@@ -16,11 +16,22 @@ const app = (0, express_1.default)();
 const port = 4000;
 const server = http_1.default.createServer(app);
 exports.io = new socket_io_1.Server(server, { cors: { allowedHeaders: '*' } });
+const whitelist = ['http://localhost:3000'];
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (whitelist.includes(origin)) {
+            callback(null, true);
+        }
+        else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+};
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());
 app.use(mongo_config_1.default);
 app.use(useAuth_1.useAuth);
-app.use((0, cors_1.default)({ origin: '*' }));
+app.use((0, cors_1.default)(corsOptions));
 app.use(routes_1.default);
 exports.io.on('connect', (socket) => {
     (0, socket2_1.socketFn)(socket);
