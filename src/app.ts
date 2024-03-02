@@ -8,9 +8,11 @@ import { useAuth } from './middlewares/useAuth';
 import route from './routes';
 
 const app = express();
+
 const port = 4000;
 
 const server = http.createServer(app);
+
 export const io = new Server(server, { cors: { allowedHeaders: '*' } });
 
 app.use(express.urlencoded({ extended: true }));
