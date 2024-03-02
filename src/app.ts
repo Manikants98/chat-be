@@ -21,13 +21,7 @@ app.use(useConnectDB);
 
 app.use(useAuth);
 
-app.use(
-  cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  }),
-);
+app.use(cors({ origin: '*' }));
 
 app.use(route);
 
