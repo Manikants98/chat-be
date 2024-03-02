@@ -15,6 +15,8 @@ const server = http.createServer(app);
 
 export const io = new Server(server, { cors: { allowedHeaders: '*' } });
 
+app.use(cors({ allowedHeaders: '*' }));
+
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
@@ -22,8 +24,6 @@ app.use(express.json());
 app.use(useConnectDB);
 
 app.use(useAuth);
-
-app.use(cors({ allowedHeaders: '*' }));
 
 app.use(route);
 
