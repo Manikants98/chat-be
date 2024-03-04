@@ -9,7 +9,7 @@ const users_1 = __importDefault(require("../../models/users"));
 const helpers_1 = require("../../helpers");
 const contactsFn = async (req, res) => {
     if (req.method === 'POST') {
-        const { name, email, mobile_number, instagram = 'https://instagram.com/', linkedin = 'https://linkedin.com/', contact_type = 'General' } = await req.body;
+        const { name, email, mobile_number, instagram = 'https://instagram.com/', linkedin = 'https://linkedin.com/', contact_type = 'General', } = await req.body;
         const token = req.headers.authorization;
         if (!name) {
             return res.status(400).json({ message: 'Please enter your name' });
@@ -20,7 +20,7 @@ const contactsFn = async (req, res) => {
         const user = await users_1.default.findOne({ token });
         const isContact = await Contacts_1.Contact.findOne({ email, sender: user._id });
         if (isContact) {
-            return res.json({ message: 'Contact already exist' });
+            return res.status(400).json({ message: 'Contact already exist' });
         }
         const receiver = await users_1.default.findOne({ email });
         const contact = new Contacts_1.Contact({
@@ -31,7 +31,7 @@ const contactsFn = async (req, res) => {
             linkedin,
             contact_type,
             sender: user._id,
-            receiver: receiver ? receiver?._id : null
+            receiver: receiver ? receiver?._id : null,
         });
         await contact.save();
         return res.json({ message: 'Contact created successfully' });
@@ -43,7 +43,7 @@ const contactsFn = async (req, res) => {
             if (contact_id) {
                 const contact = await Contacts_1.Contact.findById(contact_id).populate([
                     { path: 'receiver', select: '-password -token' },
-                    { path: 'sender', select: '-password -token' }
+                    { path: 'sender', select: '-password -token' },
                 ]);
                 if (!contact) {
                     return res.status(404).json({ message: 'Contact not found' });
@@ -53,24 +53,24 @@ const contactsFn = async (req, res) => {
             const contacts = await Contacts_1.Contact.aggregate([
                 {
                     $match: {
-                        $or: [{ receiver: user._id }, { sender: user._id }]
-                    }
+                        $or: [{ receiver: user._id }, { sender: user._id }],
+                    },
                 },
                 {
                     $lookup: {
                         from: 'users',
                         localField: 'receiver',
                         foreignField: '_id',
-                        as: 'receiver'
-                    }
+                        as: 'receiver',
+                    },
                 },
                 {
                     $lookup: {
                         from: 'users',
                         localField: 'sender',
                         foreignField: '_id',
-                        as: 'sender'
-                    }
+                        as: 'sender',
+                    },
                 },
                 {
                     $addFields: {
@@ -78,10 +78,10 @@ const contactsFn = async (req, res) => {
                             $cond: {
                                 if: { $eq: ['$receiver._id', user._id] },
                                 then: '$sender',
-                                else: '$receiver'
-                            }
-                        }
-                    }
+                                else: '$receiver',
+                            },
+                        },
+                    },
                 },
                 {
                     $project: {
@@ -92,16 +92,16 @@ const contactsFn = async (req, res) => {
                             $cond: [
                                 { $gt: [{ $size: '$other' }, 0] },
                                 { $arrayElemAt: ['$other.email', 0] },
-                                { $ifNull: ['$email', null] }
-                            ]
+                                { $ifNull: ['$email', null] },
+                            ],
                         },
                         created_date: 1,
                         last_modified_date: 1,
                         is_chat_active: {
-                            $cond: { if: { $or: ['$receiver', '$sender'] }, then: true, else: false }
-                        }
-                    }
-                }
+                            $cond: { if: { $or: ['$receiver', '$sender'] }, then: true, else: false },
+                        },
+                    },
+                },
             ]);
             return res.json({ message: 'Contacts retrieved successfully', contacts });
         }

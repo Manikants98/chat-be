@@ -15,18 +15,21 @@ const Messages_1 = require("../../models/Messages");
  */
 const socketFn = async (socket, page = 1, limit = 20) => {
     await mongoose_1.default.connect(mongo_config_1.uri);
-    console.log("Mongo Connected");
+    console.log('Mongo Connected');
     try {
         let messages = [];
         let reqbody = {};
-        socket.on("authentication", async (response) => {
+        socket.on('authentication', async (response) => {
             console.log('mkx');
             const { user_id, contact_id } = response;
             reqbody = response;
-            messages = await Messages_1.Messages.find({ contact_id }).skip((page - 1) * limit).limit(limit).sort({ _id: -1 });
+            messages = await Messages_1.Messages.find({ contact_id })
+                .skip((page - 1) * limit)
+                .limit(limit)
+                .sort({ _id: -1 });
             socket.emit('messages', { messages });
-            console.log("Messages Sent", messages);
-            console.log("Messages reqbody", reqbody);
+            console.log('Messages Sent', messages);
+            console.log('Messages reqbody', reqbody);
         });
     }
     catch (error) {
